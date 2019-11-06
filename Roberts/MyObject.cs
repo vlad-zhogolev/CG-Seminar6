@@ -54,9 +54,9 @@ namespace Roberts
             get { return m_mesh; }
         }
 
-        public MyObject(string name, Vector3D position, Vector3D rotation, Vector3D scale, Shape shape, double radius = 1.0, int subdivisions = 3)
+        public MyObject(string name, Vector3D position, Vector3D rotation, Vector3D scale, Shape shape, double radius = 2.0, int subdivisions = 3)
         {
-            m_mesh = ShapeFactory.CreateShape(shape, radius, subdivisions);
+            m_mesh = ShapeFactory.CreateShape(shape, radius, 0.4, subdivisions);
             m_name = name;
             Position = position;
             Rotation = rotation;

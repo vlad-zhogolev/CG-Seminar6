@@ -173,6 +173,7 @@ namespace Roberts
 
         private Shape GetSelectedShape()
         {
+            return Shape.Torus;
             var shape = (shapeComboBox.SelectedItem as ComboBoxItem).Content.ToString();
             switch(shape)
             {
