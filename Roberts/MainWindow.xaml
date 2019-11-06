@@ -24,6 +24,7 @@
                         <ComboBoxItem>Sphere without poles</ComboBoxItem>
                         <ComboBoxItem>Torus</ComboBoxItem>
                         <ComboBoxItem>Garlic</ComboBoxItem>
+                        <ComboBoxItem>Spring</ComboBoxItem>
                     </ComboBox>
                     <Label x:Name="shapeLabel" Content="Shape" HorizontalAlignment="Left" Margin="28,52,0,0" VerticalAlignment="Top"/>
                 </Grid>

@@ -16,6 +16,7 @@ namespace Roberts
         Sphere,
         SphereWithoutPole,
         Torus,
+        Spring,
         Garlic
     }
 
@@ -43,6 +44,8 @@ namespace Roberts
                     return CreateTorus(radius, torusRadius);
                 case Shape.Garlic:
                     return CreateGrarlic(radius);
+                case Shape.Spring:
+                    return CreateModifiedTorus(radius, torusRadius);
                 default:
                     throw new ArgumentException("Can't create shape of type: " + shape);
             }
@@ -546,6 +549,48 @@ namespace Roberts
                     faces[2 * index + 1, 0] = index;
                     faces[2 * index + 1, 1] = (index + 1) % horizontalSegments == 0 ? index + 1 : index + horizontalSegments + 1;
                     faces[2 * index + 1, 2] = index + horizontalSegments;
+                }
+            }
+
+            return new Mesh(faces, vertices);
+        }
+
+        private static Mesh CreateModifiedTorus(double r, double torusRadius)
+        {
+            var verticalSegments = 8;
+            var horizontalSegments = 36;
+            var vertices = new MyMatrix<double>(2 * verticalSegments * (horizontalSegments + 1), 4);
+
+            for ( var i = 0 ; i <= horizontalSegments ; ++i )
+            {
+                var fi = 4 * Math.PI / horizontalSegments * i;
+                for ( var j = 0 ; j < verticalSegments ; ++j )
+                {
+                    var theta = 2 * Math.PI / verticalSegments * j;
+                    var x = (r + torusRadius * Math.Cos(theta)) * Math.Cos(fi);
+                    var y = (r + torusRadius * Math.Cos(theta)) * Math.Sin(fi);
+                    var z = torusRadius * Math.Sin(theta) + torusRadius * fi;
+
+                    vertices[i * verticalSegments + j, 0] = x;
+                    vertices[i * verticalSegments + j, 1] = y;
+                    vertices[i * verticalSegments + j, 2] = z;
+                    vertices[i * verticalSegments + j, 3] = 1;
+                }
+            }
+
+            var faces = new MyMatrix<int>(4 * verticalSegments * (horizontalSegments + 1), 3);
+            for ( var i = 0 ; i < horizontalSegments ; ++i )
+            {
+                for ( var j = 0 ; j < verticalSegments ; ++j )
+                {
+                    var index = i * verticalSegments + j;
+                    faces[2 * index, 0] = index;
+                    faces[2 * index, 1] = index + verticalSegments;
+                    faces[2 * index, 2] = (index + 1) % verticalSegments == 0 ? (i + 1) * verticalSegments : index + verticalSegments + 1;
+
+                    faces[2 * index + 1, 0] = index;
+                    faces[2 * index + 1, 1] = (index + 1) % verticalSegments == 0 ? (i + 1) * verticalSegments : index + verticalSegments + 1;
+                    faces[2 * index + 1, 2] = (index + 1) % verticalSegments == 0 ? i * verticalSegments : index + 1;
                 }
             }
 

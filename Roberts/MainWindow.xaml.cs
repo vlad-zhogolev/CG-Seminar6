@@ -191,6 +191,8 @@ namespace Roberts
                 return Shape.Torus;
                 case "Garlic":
                 return Shape.Garlic;
+                case "Spring":
+                return Shape.Spring;
 
                 default:
                 throw new ArgumentException("No such shape type: " + shape);
