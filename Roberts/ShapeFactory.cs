@@ -41,6 +41,8 @@ namespace Roberts
                     return CreateSphereWithoutPole(radius, subdivisions);
                 case Shape.Torus:
                     return CreateTorus(radius, torusRadius);
+                case Shape.Garlic:
+                    return CreateGrarlic(radius);
                 default:
                     throw new ArgumentException("Can't create shape of type: " + shape);
             }
@@ -254,7 +256,7 @@ namespace Roberts
         private static Mesh CreateSphere(double r)
         {
             var horizontalSegments = 14;
-            var verticalSegments = 8;
+            var verticalSegments = 14;
             var vertices = new MyMatrix<double>(horizontalSegments * (verticalSegments + 1), 4);
 
             for (var i = 0; i <= verticalSegments; ++i)
@@ -500,25 +502,31 @@ namespace Roberts
 
         private static Mesh CreateGrarlic(double r)
         {
-            var horizontalSegments = 14;
-            var verticalSegments = 14;
+            var horizontalSegments = 20;
+            var verticalSegments = 20;
             var vertices = new MyMatrix<double>(horizontalSegments * (verticalSegments + 1), 4);
 
             for ( var i = 0 ; i <= verticalSegments ; ++i )
             {
                 var theta = -Math.PI / 2 + Math.PI / verticalSegments * i;
                 var y = r * Math.Sin(theta);
+                if ( theta > 0 )
+                {
+                    var t = theta / (Math.PI / 2.0);
+                    t = Math.Pow(t, 5);
+                    t = r * t;
+                }
                 var projection = r * Math.Cos(theta);
                 for ( var j = 0 ; j < horizontalSegments ; ++j )
                 {
                     var fi = 2 * Math.PI / horizontalSegments * j;
-                    var x = projection * Math.Cos(fi);
-                    var z = projection * Math.Sin(fi);
-
-                    vertices[i * verticalSegments + j, 0] = x;
-                    vertices[i * verticalSegments + j, 1] = y;
-                    vertices[i * verticalSegments + j, 2] = z;
-                    vertices[i * verticalSegments + j, 3] = 1;
+                    var multiplier = 1.0 + 0.5 * Math.Abs(Math.Sin(2 * fi));
+                    var x = projection * Math.Cos(fi) * multiplier;
+                    var z = projection * Math.Sin(fi) * multiplier;
+                    vertices[i * horizontalSegments + j, 0] = x;
+                    vertices[i * horizontalSegments + j, 1] = y + (theta > 0 ? r * Math.Pow(theta / (Math.PI / 2.0), 5) : 0.0);
+                    vertices[i * horizontalSegments + j, 2] = z;
+                    vertices[i * horizontalSegments + j, 3] = 1;
                 }
             }
 
@@ -527,7 +535,7 @@ namespace Roberts
             {
                 for ( var j = 0 ; j < horizontalSegments ; ++j )
                 {
-                    var index = i * verticalSegments + j;
+                    var index = i * horizontalSegments + j;
                     faces[index, 0] = index;
                     faces[index, 1] = (index + 1) % horizontalSegments == 0 ? index - horizontalSegments + 1 : index + 1;
                     faces[index, 2] = (index + 1) % horizontalSegments == 0 ? index + 1 : index + horizontalSegments + 1;

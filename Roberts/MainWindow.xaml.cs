@@ -189,6 +189,8 @@ namespace Roberts
                 return Shape.SphereWithoutPole;
                 case "Torus":
                 return Shape.Torus;
+                case "Garlic":
+                return Shape.Garlic;
 
                 default:
                 throw new ArgumentException("No such shape type: " + shape);
