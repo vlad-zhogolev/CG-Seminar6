@@ -21,7 +21,7 @@ namespace Roberts
 
     class ShapeFactory
     {
-        public static Mesh CreateShape(Shape shape, double radius, double torusRadius = 0.4, int subdivisions = 3)
+        public static Mesh CreateShape(Shape shape, double radius, double torusRadius, int subdivisions = 3)
         {
             switch (shape)
             {
@@ -447,7 +447,7 @@ namespace Roberts
 
         private static Mesh CreateTorus(double r, double torusRadius)
         {
-            var verticalSegments = 10;
+            var verticalSegments = 8;
             var horizontalSegments = 18;
             var vertices = new MyMatrix<double>(verticalSegments * horizontalSegments, 4);
 

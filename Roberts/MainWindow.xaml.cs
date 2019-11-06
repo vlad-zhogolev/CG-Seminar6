@@ -58,7 +58,7 @@ namespace Roberts
                 {2, 0, 1}
             };
 
-            var defaultObject = new MyObject("default", new Vector3D(0, 0, 0), new Vector3D(0, 0, 0), Default.SCALE, Shape.Tetrahedron);
+            var defaultObject = new MyObject("default", new Vector3D(0, 0, 0), new Vector3D(0, 0, 0), Default.SCALE, Shape.Tetrahedron, 1.0, 0.0);
             AddObject(defaultObject);
             objectsListBox.SelectedIndex = 0;
             var r = -1.0 / 15.0;
@@ -94,7 +94,7 @@ namespace Roberts
         private void AddObject()
         {
             var name = objectNameTextBox.Text;
-            AddObject(new MyObject(name, new Vector3D(0, 0, 0), new Vector3D(0, 0, 0), Default.SCALE, GetSelectedShape()));
+            AddObject(new MyObject(name, new Vector3D(0, 0, 0), new Vector3D(0, 0, 0), Default.SCALE, GetSelectedShape(), 1.0, 0.2));
         }
 
         private void AddObject(MyObject obj)
@@ -160,9 +160,6 @@ namespace Roberts
         {
             var xyz = GetRotationSliderValues();
             m_currentObject.Rotation = new Vector3D(xyz[0], xyz[1], xyz[2]);
-            //m_currentObject.SetRotation(TransformFactory.CreateOxRotation(xyz[0]));
-            //m_currentObject.AddRotation(TransformFactory.CreateOyRotation(xyz[1]));
-            //m_currentObject.AddRotation(TransformFactory.CreateOzRotation(xyz[2]));
             Redraw();
         }
 
@@ -173,7 +170,6 @@ namespace Roberts
 
         private Shape GetSelectedShape()
         {
-            return Shape.Torus;
             var shape = (shapeComboBox.SelectedItem as ComboBoxItem).Content.ToString();
             switch(shape)
             {
@@ -191,6 +187,8 @@ namespace Roberts
                 return Shape.Sphere;
                 case "Sphere without poles":
                 return Shape.SphereWithoutPole;
+                case "Torus":
+                return Shape.Torus;
 
                 default:
                 throw new ArgumentException("No such shape type: " + shape);
