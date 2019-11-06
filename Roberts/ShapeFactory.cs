@@ -254,7 +254,7 @@ namespace Roberts
         private static Mesh CreateSphere(double r)
         {
             var horizontalSegments = 14;
-            var verticalSegments = 14;
+            var verticalSegments = 8;
             var vertices = new MyMatrix<double>(horizontalSegments * (verticalSegments + 1), 4);
 
             for (var i = 0; i <= verticalSegments; ++i)
@@ -268,10 +268,10 @@ namespace Roberts
                     var x = projection * Math.Cos(fi);
                     var z = projection * Math.Sin(fi);
 
-                    vertices[i * verticalSegments + j, 0] = x;
-                    vertices[i * verticalSegments + j, 1] = y;
-                    vertices[i * verticalSegments + j, 2] = z;
-                    vertices[i * verticalSegments + j, 3] = 1;
+                    vertices[i * horizontalSegments + j, 0] = x;
+                    vertices[i * horizontalSegments + j, 1] = y;
+                    vertices[i * horizontalSegments + j, 2] = z;
+                    vertices[i * horizontalSegments + j, 3] = 1;
                 }
             }
 
@@ -280,7 +280,7 @@ namespace Roberts
             {
                 for (var j = 0; j < horizontalSegments; ++j) 
                 {
-                    var index = i * verticalSegments + j;
+                    var index = i * horizontalSegments + j;
                     faces[index, 0] = index;
                     faces[index, 1] = (index + 1) % horizontalSegments == 0 ? index - horizontalSegments + 1 : index + 1;
                     faces[index, 2] = (index + 1) % horizontalSegments == 0 ? index + 1 : index + horizontalSegments + 1;
@@ -493,6 +493,46 @@ namespace Roberts
                 faces[2 * index + 1, 0] = index;
                 faces[2 * index + 1, 1] = (i + 1) % verticalSegments == 0 ? 0 : i + 1;
                 faces[2 * index + 1, 2] = (index + 1) % verticalSegments == 0 ? (horizontalSegments - 1) * verticalSegments : index + 1;
+            }
+
+            return new Mesh(faces, vertices);
+        }
+
+        private static Mesh CreateGrarlic(double r)
+        {
+            var horizontalSegments = 14;
+            var verticalSegments = 14;
+            var vertices = new MyMatrix<double>(horizontalSegments * (verticalSegments + 1), 4);
+
+            for ( var i = 0 ; i <= verticalSegments ; ++i )
+            {
+                var theta = -Math.PI / 2 + Math.PI / verticalSegments * i;
+                var y = r * Math.Sin(theta);
+                var projection = r * Math.Cos(theta);
+                for ( var j = 0 ; j < horizontalSegments ; ++j )
+                {
+                    var fi = 2 * Math.PI / horizontalSegments * j;
+                    var x = projection * Math.Cos(fi);
+                    var z = projection * Math.Sin(fi);
+
+                    vertices[i * verticalSegments + j, 0] = x;
+                    vertices[i * verticalSegments + j, 1] = y;
+                    vertices[i * verticalSegments + j, 2] = z;
+                    vertices[i * verticalSegments + j, 3] = 1;
+                }
+            }
+
+            var faces = new MyMatrix<int>(horizontalSegments * verticalSegments, 4);
+            for ( var i = 0 ; i < verticalSegments ; ++i )
+            {
+                for ( var j = 0 ; j < horizontalSegments ; ++j )
+                {
+                    var index = i * verticalSegments + j;
+                    faces[index, 0] = index;
+                    faces[index, 1] = (index + 1) % horizontalSegments == 0 ? index - horizontalSegments + 1 : index + 1;
+                    faces[index, 2] = (index + 1) % horizontalSegments == 0 ? index + 1 : index + horizontalSegments + 1;
+                    faces[index, 3] = index + horizontalSegments;
+                }
             }
 
             return new Mesh(faces, vertices);
