@@ -277,16 +277,19 @@ namespace Roberts
                 }
             }
 
-            var faces = new MyMatrix<int>(horizontalSegments * verticalSegments, 4);
+            var faces = new MyMatrix<int>(2 * horizontalSegments * verticalSegments, 3);
             for (var i = 0; i < verticalSegments; ++i)
             {
                 for (var j = 0; j < horizontalSegments; ++j) 
                 {
                     var index = i * horizontalSegments + j;
-                    faces[index, 0] = index;
-                    faces[index, 1] = (index + 1) % horizontalSegments == 0 ? index - horizontalSegments + 1 : index + 1;
-                    faces[index, 2] = (index + 1) % horizontalSegments == 0 ? index + 1 : index + horizontalSegments + 1;
-                    faces[index, 3] = index + horizontalSegments;
+                    faces[2 * index, 0] = index;
+                    faces[2 * index, 1] = (index + 1) % horizontalSegments == 0 ? index - horizontalSegments + 1 : index + 1;
+                    faces[2 * index, 2] = (index + 1) % horizontalSegments == 0 ? index + 1 : index + horizontalSegments + 1;
+
+                    faces[2 * index + 1, 0] = index;
+                    faces[2 * index + 1, 1] = (index + 1) % horizontalSegments == 0 ? index + 1 : index + horizontalSegments + 1;
+                    faces[2 * index + 1, 2] = index + horizontalSegments;
                 }
             }
 
@@ -503,7 +506,7 @@ namespace Roberts
         private static Mesh CreateGrarlic(double r)
         {
             var horizontalSegments = 20;
-            var verticalSegments = 20;
+            var verticalSegments = 16;
             var vertices = new MyMatrix<double>(horizontalSegments * (verticalSegments + 1), 4);
 
             for ( var i = 0 ; i <= verticalSegments ; ++i )
@@ -530,16 +533,19 @@ namespace Roberts
                 }
             }
 
-            var faces = new MyMatrix<int>(horizontalSegments * verticalSegments, 4);
+            var faces = new MyMatrix<int>(2 * horizontalSegments * verticalSegments, 3);
             for ( var i = 0 ; i < verticalSegments ; ++i )
             {
                 for ( var j = 0 ; j < horizontalSegments ; ++j )
                 {
                     var index = i * horizontalSegments + j;
-                    faces[index, 0] = index;
-                    faces[index, 1] = (index + 1) % horizontalSegments == 0 ? index - horizontalSegments + 1 : index + 1;
-                    faces[index, 2] = (index + 1) % horizontalSegments == 0 ? index + 1 : index + horizontalSegments + 1;
-                    faces[index, 3] = index + horizontalSegments;
+                    faces[2 * index, 0] = index;
+                    faces[2 * index, 1] = (index + 1) % horizontalSegments == 0 ? index - horizontalSegments + 1 : index + 1;
+                    faces[2 * index, 2] = (index + 1) % horizontalSegments == 0 ? index + 1 : index + horizontalSegments + 1;
+
+                    faces[2 * index + 1, 0] = index;
+                    faces[2 * index + 1, 1] = (index + 1) % horizontalSegments == 0 ? index + 1 : index + horizontalSegments + 1;
+                    faces[2 * index + 1, 2] = index + horizontalSegments;
                 }
             }
 
