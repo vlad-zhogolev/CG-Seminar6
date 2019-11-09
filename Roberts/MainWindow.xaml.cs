@@ -17,6 +17,57 @@ namespace Roberts
         Orthogonal
     }
 
+    public class ProjectionFactory
+    {
+        public static MyMatrix<double> Create(Projection type, double far, double near, double fieldOfView, double screenWidth, double screenHeight)
+        {
+            switch (type)
+            {
+                case Projection.Perspective:
+                    return Perspective(far, near, fieldOfView, screenWidth, screenHeight);
+                case Projection.Orthogonal:
+                    return Orthogonal(far, near, fieldOfView, screenWidth, screenHeight);
+                default:
+                    throw new ArgumentException("Can't create projection matrix for unknown type: " + type);
+            }
+        }
+
+        private static MyMatrix<double> Perspective(double far, double near, double fieldOfView, double screenWidth, double screenHeight)
+        {
+            fieldOfView = Utilities.ToRadians(fieldOfView);
+            var aspect = screenWidth / screenHeight;
+            var tanHalfFovY = Math.Tan(fieldOfView / 2.0);
+            return new MyMatrix<double>(new double[,]
+            {
+                { 1.0 / (aspect * tanHalfFovY), 0,                0,                                 0 },
+                { 0,                           1.0 / tanHalfFovY, 0,                                 0 },
+                { 0,                           0,                 -(far + near) / (far - near),     -1 },
+                { 0,                           0,                 -2.0 * far * near / (far - near),  0 }
+            });
+        }
+
+        private static MyMatrix<double> Orthogonal(double far, double near, double fieldOfView, double screenWidth, double screenHeight)
+        {
+            fieldOfView = Utilities.ToRadians(fieldOfView);
+            var aspect = screenWidth / screenHeight;
+            var tanHalfFovY = Math.Tan(fieldOfView / 2.0);
+            var top = near * tanHalfFovY;
+            var right = top;
+            return new MyMatrix<double>(new double[,]
+            {
+                { 1.0 / right, 0,                      0,                             0 },
+                { 0,                                 1.0 / top, 0,                             0 },
+                { 0,                                 0,                      -2.0 / (far - near),           0 },
+                { 0,                                 0,                      -(far + near) / (far - near),  1 }
+            });
+        }
+    }
+
+    public class ViewFactory
+    {
+        //public MyMatrix<double> LookAt()
+    }
+
     class Default
     {
         public static readonly Vector3D SCALE = new Vector3D(0.25, 0.25, 0.25);
@@ -71,8 +122,16 @@ namespace Roberts
             };
             var projection = new MyMatrix<double>(perspective);
 
+            var view = new MyMatrix<double>(new double[,]
+            {
+                {1, 0, 0, 0 },
+                {0, 1, 0, 0 },
+                {0, 0, 1, 0 },
+                {0, 0, -4, 1 }
+            });
+
             m_currentObject = GetCurrentObject();
-            m_drawer = new Drawer(projection, (int)m_bitmap.Width, (int)m_bitmap.Height);
+            m_drawer = new Drawer(view, projection, (int)m_bitmap.Width, (int)m_bitmap.Height);
             projectionComboBox.SelectedIndex = 0;
             Redraw();
         }
@@ -220,12 +279,14 @@ namespace Roberts
             {
                 case Projection.Perspective:
                 {
-                    m_drawer.Projection = GetPerspectiveProjection(Default.CAMERA_Z_VALUE);
+                    //m_drawer.Projection = GetPerspectiveProjection(Default.CAMERA_Z_VALUE);
+                    m_drawer.Projection = ProjectionFactory.Create(type, 10.0, 0.1, 45, m_bitmap.Width, m_bitmap.Height);
                 }
                 break;
                 case Projection.Orthogonal:
                 {
-                    m_drawer.Projection = GetOrthogonalProjection();
+                    //m_drawer.Projection = GetOrthogonalProjection();
+                    m_drawer.Projection = ProjectionFactory.Create(type, 10.0, 0.1, 45, 10, 10);
                 }
                 break;
                 default:

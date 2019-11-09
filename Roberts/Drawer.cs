@@ -8,6 +8,7 @@ namespace Roberts
     class Drawer
     {
         private MyMatrix<double> m_projection;
+        private MyMatrix<double> m_view;
         private int m_screenWidth;
         private int m_screenHeight;
         
@@ -16,7 +17,7 @@ namespace Roberts
             get { return m_projection; }
             set
             {
-                if ( m_projection.Height != m_projection.Width && m_projection.Height != 4 )
+                if (value != null && value.Height != value.Width && value.Height != 4 )
                 {
                     throw new ArgumentException("Wrong projection matrix size");
                 }
@@ -24,9 +25,23 @@ namespace Roberts
             }
         }
 
-        public Drawer(MyMatrix<double> projection, int width, int height)
+        public MyMatrix<double> View
         {
-            m_projection = projection;
+            get { return m_view; }
+            set
+            {
+                if ( value != null && value.Height != value.Width && value.Height != 4 )
+                {
+                    throw new ArgumentException("Wrong view matrix size");
+                }
+                m_view = value;
+            }
+        }
+
+        public Drawer(MyMatrix<double> view, MyMatrix<double> projection, int width, int height)
+        {
+            View = view;
+            Projection = projection;
             m_screenWidth = width;
             m_screenHeight = height;
         }
@@ -38,7 +53,9 @@ namespace Roberts
 
         public void Draw(WriteableBitmap bitmap, Mesh mesh, bool cutFaces)
         {
-            var projectedVertices = Project(mesh.GetWorldCoordinates());
+            var worldVertices = mesh.GetWorldCoordinates();
+            var viewVertices = worldVertices * m_view;
+            var projectedVertices = Project(viewVertices);
             var screenCoordinates = CalculateScreenCoordinates(projectedVertices);
             IList<Face> faces = null;
             if ( cutFaces )
@@ -73,6 +90,7 @@ namespace Roberts
             {
                 result[i, 0] /= result[i, 3];
                 result[i, 1] /= result[i, 3];
+                result[i, 2] /= result[i, 3];
                 result[i, 3] = 1.0;
             }
             return result;
