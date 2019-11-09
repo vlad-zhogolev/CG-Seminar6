@@ -321,11 +321,11 @@ namespace Roberts
         private void addObjectButton_Click(object sender, RoutedEventArgs e)
         {
             var name = objectNameTextBox.Text;
-            if ( !m_objectsMap.ContainsKey(name) )
+            if ( name != string.Empty && !m_objectsMap.ContainsKey(name))
             {
                 AddObject();
+                Redraw();
             }
-            Redraw();
         }
 
         private void objectsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
